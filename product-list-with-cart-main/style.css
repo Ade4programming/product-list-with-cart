@@ -173,7 +173,8 @@
 
   .product-selected{
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    /* align-items: center; */
     justify-content: space-between;
     border-bottom: 1px solid var(--Rose-300);
   }
@@ -186,7 +187,19 @@
     display: grid;
     gap: 0.5rem;
     margin-bottom: 1rem;
+
+    span:nth-child(1){
+      color: var(--Red);
+    }
+    span:nth-child(2){
+      color: var(--Rose-400);
+    }
+    span:nth-child(3){
+      color: var(--Rose-400);
+      font-weight: 500;
+    }
   }
+  
 
   .order-summary{
     display: grid;

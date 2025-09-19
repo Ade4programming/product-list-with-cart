@@ -146,77 +146,91 @@ document.querySelector(".js-product").innerHTML = productsHtml;
 // next step is add event listener to all the 'add buttons'.
 // data attribute for unique identity of products.
 
-const cart = [
-  // {
-  //   productId: productId,
-  //   quantity: number,
-  // },
-];
+let cart = [];
 
-const addButton = document.querySelectorAll(".js-add-to-cart");
-addButton.forEach((button) => {
-  button.addEventListener("click", () => {
-    // get data attribute id when clicked
-    const productId = button.dataset.productId;
-    addToCart(productId);
-    updateQuantity();
-    renderCart(); // <-- Add this line
-  });
-});
-
-
+// Add to cart logic
 function addToCart(productId) {
-  let matchingItem;
-  cart.forEach((cartItem) => {
-    if (productId === cartItem.productId) {
-      matchingItem = cartItem;
-    }
-  });
-  if (matchingItem) {
-    matchingItem.quantity += 1;
+  const found = cart.find(item => item.productId === productId);
+  if (found) {
+    found.quantity += 1;
   } else {
-    cart.push({
-      productId: productId,
-      quantity: 1,
-    });
+    cart.push({ productId, quantity: 1 });
   }
+  renderCart();
 }
 
-function updateQuantity() {
-  let cartQuantity = 0;
-
-  cart.forEach((cartItem) => {
-    cartQuantity += cartItem.quantity;
-  });
-
-  document.querySelector(".cart-quantity").innerHTML = cartQuantity;
+// Remove from cart logic
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.productId !== productId);
+  renderCart();
 }
 
+// Render cart
 function renderCart() {
-  let cartHtml = "";
-  cart.forEach((cartItem) => {
-    const productId = cartItem.productId;
-    const matchingProduct = products.find(
-      (product) => product.id === productId
-    );
+  const cartList = document.querySelector('.product-selected');
+  const emptySection = document.querySelector('.empty-section');
+  const orderTotal = document.querySelector('.order-summary h2');
+  const cartQuantity = document.querySelector('.cart-quantity');
+
+  if (cart.length === 0) {
+    emptySection.style.display = 'block';
+    cartList.innerHTML = '';
+    orderTotal.textContent = '$0.00 (0 items)';
+    cartQuantity.textContent = '0';
+    return;
+  } else {
+    emptySection.style.display = 'none';
+  }
+
+  let cartHtml = '';
+  let total = 0;
+  let totalQty = 0;
+
+  cart.forEach(cartItem => {
+    const product = products.find(p => p.id === cartItem.productId);
+    const itemTotal = (product.price * cartItem.quantity) / 100;
+    total += itemTotal;
+    totalQty += cartItem.quantity;
 
     cartHtml += `
       <section class="item">
-        <h4>${matchingProduct.name}</h4>
-        <p>
-          <span>${cartItem.quantity}x</span>
-          <span>@$${(matchingProduct.price / 100).toFixed(2)}</span>
-          <span>$${((matchingProduct.price * cartItem.quantity) / 100).toFixed(
-            2
-          )}</span>
-        </p>
-      </section>
-      <section>
-        <img src="${matchingProduct.image.mobile}" alt="">
+        <img src="${product.image.thumbnail}" alt="${product.name}" style="width:40px;border-radius:50%;">
+        <div>
+          <h4>${product.name}</h4>
+          <p>
+            <span>${cartItem.quantity}x</span>
+            <span>@$${(product.price / 100).toFixed(2)}</span>
+            <span>$${itemTotal.toFixed(2)}</span>
+          </p>
+        </div>
+        <button class="remove-item" data-product-id="${product.id}" style="background:none;border:none;cursor:pointer;">
+          <img src="assets/images/icon-remove-item.svg" alt="Remove" style="width:20px;">
+        </button>
       </section>
     `;
   });
-  document.querySelector(".product-selected").innerHTML = cartHtml;
+
+  cartList.innerHTML = cartHtml;
+  orderTotal.textContent = `$${total.toFixed(2)} (${totalQty} items)`;
+  cartQuantity.textContent = totalQty;
+
+  // Add remove event listeners
+  cartList.querySelectorAll('.remove-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      removeFromCart(btn.dataset.productId);
+    });
+  });
 }
 
-// Update your add-to-cart event to call renderCart
+// Add event listeners to add-to-cart buttons
+document.querySelectorAll('.js-add-to-cart').forEach(button => {
+  button.addEventListener('click', () => {
+    const productId = button.dataset.productId;
+    addToCart(productId);
+  });
+});
+
+// Initial render
+renderCart();
+
+
