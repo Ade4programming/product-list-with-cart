@@ -1,6 +1,6 @@
-import { cart } from './cart.js';
+// import { cart } from "./cart.js";
 
-export const products = [
+ const products = [
   {
     id: "id1",
     image: {
@@ -111,7 +111,7 @@ export const products = [
   },
 ];
 
-let productsHtml = ''; //Accumulator variable
+let productsHtml = ""; //Accumulator variable
 
 products.forEach((product) => {
   //Accumulator pattern
@@ -142,26 +142,28 @@ products.forEach((product) => {
   `;
 });
 
-
-document.querySelector('.js-product').innerHTML = productsHtml;
-
+document.querySelector(".js-product").innerHTML = productsHtml;
 // next step is add event listener to all the 'add buttons'.
 // data attribute for unique identity of products.
 
+const cart = [
+  // {
+  //   productId: productId,
+  //   quantity: number,
+  // },
+];
 
-
-const addButton = document.querySelectorAll('.js-add-to-cart');
-  addButton.forEach((button) => {
-  button.addEventListener('click', () => {
-
+const addButton = document.querySelectorAll(".js-add-to-cart");
+addButton.forEach((button) => {
+  button.addEventListener("click", () => {
     // get data attribute id when clicked
     const productId = button.dataset.productId;
     addToCart(productId);
-
-    updateQuantity();    
-    
+    updateQuantity();
+    renderCart(); // <-- Add this line
   });
 });
+
 
 function addToCart(productId) {
   let matchingItem;
@@ -190,3 +192,31 @@ function updateQuantity() {
   document.querySelector(".cart-quantity").innerHTML = cartQuantity;
 }
 
+function renderCart() {
+  let cartHtml = "";
+  cart.forEach((cartItem) => {
+    const productId = cartItem.productId;
+    const matchingProduct = products.find(
+      (product) => product.id === productId
+    );
+
+    cartHtml += `
+      <section class="item">
+        <h4>${matchingProduct.name}</h4>
+        <p>
+          <span>${cartItem.quantity}x</span>
+          <span>@$${(matchingProduct.price / 100).toFixed(2)}</span>
+          <span>$${((matchingProduct.price * cartItem.quantity) / 100).toFixed(
+            2
+          )}</span>
+        </p>
+      </section>
+      <section>
+        <img src="${matchingProduct.image.mobile}" alt="">
+      </section>
+    `;
+  });
+  document.querySelector(".product-selected").innerHTML = cartHtml;
+}
+
+// Update your add-to-cart event to call renderCart
