@@ -1,6 +1,6 @@
 // import { cart } from "./cart.js";
 
- const products = [
+const products = [
   {
     id: "id1",
     image: {
@@ -150,7 +150,7 @@ let cart = [];
 
 // Add to cart logic
 function addToCart(productId) {
-  const found = cart.find(item => item.productId === productId);
+  const found = cart.find((item) => item.productId === productId);
   if (found) {
     found.quantity += 1;
   } else {
@@ -161,40 +161,42 @@ function addToCart(productId) {
 
 // Remove from cart logic
 function removeFromCart(productId) {
-  cart = cart.filter(item => item.productId !== productId);
+  cart = cart.filter((item) => item.productId !== productId);
   renderCart();
 }
 
 // Render cart
 function renderCart() {
-  const cartList = document.querySelector('.product-selected');
-  const emptySection = document.querySelector('.empty-section');
-  const orderTotal = document.querySelector('.order-summary h2');
-  const cartQuantity = document.querySelector('.cart-quantity');
+  const cartList = document.querySelector(".product-selected");
+  const emptySection = document.querySelector(".empty-section");
+  const orderTotal = document.querySelector(".order-summary h2");
+  const cartQuantity = document.querySelector(".cart-quantity");
 
   if (cart.length === 0) {
-    emptySection.style.display = 'block';
-    cartList.innerHTML = '';
-    orderTotal.textContent = '$0.00 (0 items)';
-    cartQuantity.textContent = '0';
+    emptySection.style.display = "block";
+    cartList.innerHTML = "";
+    orderTotal.textContent = "$0.00 (0 items)";
+    cartQuantity.textContent = "0";
     return;
   } else {
-    emptySection.style.display = 'none';
+    emptySection.style.display = "none";
   }
 
-  let cartHtml = '';
+  let cartHtml = "";
   let total = 0;
   let totalQty = 0;
 
-  cart.forEach(cartItem => {
-    const product = products.find(p => p.id === cartItem.productId);
+  cart.forEach((cartItem) => {
+    const product = products.find((p) => p.id === cartItem.productId);
     const itemTotal = (product.price * cartItem.quantity) / 100;
     total += itemTotal;
     totalQty += cartItem.quantity;
 
     cartHtml += `
       <section class="item">
-        <img src="${product.image.thumbnail}" alt="${product.name}" style="width:40px;border-radius:50%;">
+        <img src="${product.image.thumbnail}" alt="${
+      product.name
+    }" style="width:40px;border-radius:50%;">
         <div>
           <h4>${product.name}</h4>
           <p>
@@ -203,7 +205,9 @@ function renderCart() {
             <span>$${itemTotal.toFixed(2)}</span>
           </p>
         </div>
-        <button class="remove-item" data-product-id="${product.id}" style="background:none;border:none;cursor:pointer;">
+        <button class="remove-item" data-product-id="${
+          product.id
+        }" style="background:none;border:none;cursor:pointer;">
           <img src="assets/images/icon-remove-item.svg" alt="Remove" style="width:20px;">
         </button>
       </section>
@@ -215,16 +219,16 @@ function renderCart() {
   cartQuantity.textContent = totalQty;
 
   // Add remove event listeners
-  cartList.querySelectorAll('.remove-item').forEach(btn => {
-    btn.addEventListener('click', () => {
+  cartList.querySelectorAll(".remove-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
       removeFromCart(btn.dataset.productId);
     });
   });
 }
 
 // Add event listeners to add-to-cart buttons
-document.querySelectorAll('.js-add-to-cart').forEach(button => {
-  button.addEventListener('click', () => {
+document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+  button.addEventListener("click", () => {
     const productId = button.dataset.productId;
     addToCart(productId);
   });
@@ -232,5 +236,3 @@ document.querySelectorAll('.js-add-to-cart').forEach(button => {
 
 // Initial render
 renderCart();
-
-
